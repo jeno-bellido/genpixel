@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <title>GENPIXEL</title>
+    <link rel="icon" type="image/png" href="../static/images/G.png">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/images/style.css">
+    
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Animate On Scroll -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
+    
+</head>
+<body style="height: 100%; width: 100%; background-image: url('../static/images/bg.png'); background-size: cover; background-position: center; ">
+
+    <div class="pb-5 p-2 " >
+
+    <!-- NavBar -->
+    <div class=" d-flex align-items-center justify-content-center " style="height: 100px; width: 100%;">
+        <div class="d-flex container justify-content-between  p-0">
+            <div>
+                <p data-aos="fade-right" data-aos-duration="2000" class="p-0 m-0" style="font-size: 20px; font-weight: 900; background: linear-gradient(to right, hsl(183, 100%, 73%), #1bdcf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;"> GENPIXEL </p>
+            </div>
+            
+            <div class=" d-flex ">
+                <div data-aos="fade-down" data-aos-duration="2000" data-aos-delay="300" >
+                    <a href="{{ url_for('home') }}" > <button class="glow-on-hover px-3 py-1 border text-light mx-1" style="background-color: #02616d; font-weight: 500;">Generation</button> </a> 
+                </div>
+
+                <div data-aos="fade-down" data-aos-duration="2000" data-aos-delay="600">
+                    <a  href="{{ url_for('about') }}" > <button class="rounded px-3 py-1 border text-light mx-1 " style="background-color: transparent; font-weight: 500;">About</button></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Generation Part -->
+    <div style="height: auto;" class="border container rounded d-flex " data-aos="fade-up" data-aos-duration="2000" >
+        <div class="col-12 row d-flex justify-content-center  align-items-center p-0 m-0 ">
+            <div class="col-lg-4 col-md-4 col-12 p-3 w-100">
+                <div class=" ">
+                    <img src="../static/images/hero.png" width="100%" class="rounded " alt="">
+                </div>
+            </div>
+
+            <div class="col-lg-8 col-md-8 col-12 p-2 d-flex align-items-center">
+                <div>
+                    <p class="text-light" style="font-size: 20px; font-weight: 700;"> Generative Deep Learning with Trained Model for Face Generation</p>
+                    <p class="text-light" style="font-size: 16px; font-weight: 200; line-height: 1px;"> Computer Vision 2023</p>
+                    <p class="text-light pt-2" style="font-size: 14px; font-weight: 200;"> By: Jeno Bellido, Ariane Marie Lavilla, John Cairo Minerva, and Rey Anne Destua.</p>
+                    <p class="text-light" style="font-size: 20px; font-weight: 200;"> ⚙️: <i style="font-size: 16px;">Generative Adversarial Network (GAN)
+                    </i>  </p>
+                    <p class="text-light pt-2" style="font-size: 14px; font-weight: 200;"> 
+                        This web application harnesses the capabilities of our trained Generative Adversarial Network (GAN)
+                        model to craft facial images. Trained on an extensive dataset comprising over 10,000 face images, our model demonstrates a sophisticated understanding of facial features and nuances.</p>
+                        <p class="p-0 m-0 pb-2 text-light" style="font-weight: 200;">  Generate random number of images: </p>
+
+                        <button id="autoGenerate" class="glow-on-hover px-3 py-1 border-0 text-light mx-1" style="background-color: #218a98; font-weight: 200;">Auto Generate</button>
+    <br>
+                    <label for="num" class="text-light" style="font-weight: 200;"> Specify number of images: </label>
+                    <input class="rounded border bg-transparent text-light mt-2 shadow" style="font-size: 16px; font-weight: 500; line-height: 1px;" id="n" type="number" min="1" max="100" name="num">
+                    <button id="generate" class="glow-on-hover  px-3 py-1 border-0 text-light mx-1" style="background-color: #218a98; font-weight: 200;">Generate</button>
+                </div>
+            </div>
+
+            <div class="mt-2 m-0 " id="images"></div>
+
+            <hr>
+        </div>
+
+
+
+    </div>
+
+
+</div>
+
+
+    <script>
+        document.getElementById('n').addEventListener('input', function(e) {
+  var max = parseInt(e.target.max);
+  if (e.target.value > max) {
+    e.target.value = max;
+  }
+});
+$(document).ready(function(){
+    $("#generate").click(function(){
+        var n = $("#n").val();
+        $.post("/generate", {n: n}, function(data){
+            $("#images").empty();
+            if(data.images.length > 0){
+                $("#images").append('<p class="text-light" style="font-size: 20px; font-weight: 700;"> GENERATED IMAGES</p>');
+                for(var i = 0; i < data.images.length; i++){
+                    $("#images").append('<img style="width: 20%;" src="data:image/png;base64,' + data.images[i] + '">');
+                }
+            }
+        });
+    });
+    $("#autoGenerate").click(function(){
+        var randomNum = Math.floor(Math.random() * 100) + 1; // Generate a random number between 1 and 100
+        $.post("/generate", {n: randomNum}, function(data){
+            $("#images").empty();
+            if(data.images.length > 0){
+                $("#images").append('<p class="text-light" style="font-size: 20px; font-weight: 700;"> GENERATED IMAGES</p>');
+                for(var i = 0; i < data.images.length; i++){
+                    $("#images").append('<img style="width: 20%" src="data:image/png;base64,' + data.images[i] + '">');
+                }
+            }
+        });
+    });
+});
+
+    </script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- Include AOS script and initialization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
